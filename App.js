@@ -1,14 +1,39 @@
+import * as Location from "expo-location";
 import { StatusBar } from "expo-status-bar";
+import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Dimensions } from "react-native";
 
 const { height, width: SCREEN_WIDTH } = Dimensions.get("window");
 
 export default function App() {
+  const [city, setCity] = useState("Loading...");
+  const [ok, setOk] = useState(true);
+  const ask = async () => {
+    const { granted } = await Location.requestForegroundPermissionsAsync();
+    if (!granted) {
+      setOk(false);
+    } else {
+      const {
+        coords: { latitude, longitude },
+      } = await Location.getCurrentPositionAsync({ accuracy: 5 });
+      const location = await Location.reverseGeocodeAsync(
+        {
+          latitude,
+          longitude,
+        },
+        { useGoogleMaps: false }
+      );
+      setCity(location[0].city);
+    }
+  };
+  useEffect(() => {
+    ask();
+  }, []);
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
       <View style={styles.city}>
-        <Text style={styles.cityName}>Goyang</Text>
+        <Text style={styles.cityName}>{city}</Text>
       </View>
       <View style={styles.date}>
         <Text style={styles.dayOfWeek}>Friday</Text>
