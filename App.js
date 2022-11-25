@@ -1,14 +1,24 @@
 import * as Location from "expo-location";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Dimensions,
+  ActivityIndicator,
+} from "react-native";
 
 const { height, width: SCREEN_WIDTH } = Dimensions.get("window");
+
+const API_KEY = "8b46d1d2fb5be43ae110f89a6e57cab0";
 
 export default function App() {
   const [city, setCity] = useState("Loading...");
   const [ok, setOk] = useState(true);
-  const ask = async () => {
+  const [days, setDays] = useState([]);
+  const getWeather = async () => {
     const { granted } = await Location.requestForegroundPermissionsAsync();
     if (!granted) {
       setOk(false);
@@ -24,10 +34,17 @@ export default function App() {
         { useGoogleMaps: false }
       );
       setCity(location[0].city);
+      const json = await (
+        await fetch(
+          `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`
+        )
+      ).json();
+      setDays(json.list);
+      console.log(json.list[0]);
     }
   };
   useEffect(() => {
-    ask();
+    getWeather();
   }, []);
   return (
     <View style={styles.container}>
@@ -45,18 +62,25 @@ export default function App() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.weather}
       >
-        <View style={styles.day}>
-          <View>
-            <Text style={styles.temp}>27°</Text>
-            <Text style={styles.description}>Sunny</Text>
+        {days.length === 0 ? (
+          <View style={styles.day}>
+            <ActivityIndicator color="white" size="large" />
           </View>
-        </View>
-        <View style={styles.day}>
-          <View>
-            <Text style={styles.temp}>27°</Text>
-            <Text style={styles.description}>Sunny</Text>
-          </View>
-        </View>
+        ) : (
+          days
+            .filter((day, index) => index % 8 === 0)
+            .map((day, index) => (
+              <View style={styles.day} key={index}>
+                <View>
+                  <Text style={styles.temp}>{Math.round(day.main.temp)}°</Text>
+                  <Text style={styles.description}>{day.weather[0].main}</Text>
+                  <Text style={styles.description}>
+                    {day.weather[0].description}
+                  </Text>
+                </View>
+              </View>
+            ))
+        )}
       </ScrollView>
     </View>
   );
@@ -91,7 +115,6 @@ const styles = StyleSheet.create({
     fontSize: 178,
   },
   description: {
-    marginTop: -30,
     fontSize: 30,
   },
 });
