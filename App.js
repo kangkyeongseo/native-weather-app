@@ -25,8 +25,33 @@ const icons = {
   Thunderstorm: "lightnimg",
 };
 
+const monthsLabel = {
+  0: "January",
+  1: "February",
+  2: "March",
+  3: "April",
+  4: "May",
+  5: "June",
+  6: "July",
+  7: "August",
+  8: "September",
+  9: "October",
+  10: "November",
+  11: "December",
+};
+
+const daysLabel = {
+  0: "Monday",
+  1: "Tuesday",
+  2: "Wednesday",
+  3: "Thursday",
+  4: "Friday",
+  5: "Saturday",
+  6: "Sunday",
+};
+
 export default function App() {
-  const [city, setCity] = useState("Loading...");
+  const [city, setCity] = useState("");
   const [ok, setOk] = useState(true);
   const [days, setDays] = useState([]);
   const getWeather = async () => {
@@ -76,10 +101,15 @@ export default function App() {
           days
             .filter((day, index) => index % 8 === 0)
             .map((day, index) => (
-              <View>
+              <View key={index}>
                 <View style={styles.date}>
-                  <Text style={styles.dayOfWeek}>Friday</Text>
-                  <Text style={styles.dateDetail}>25 November</Text>
+                  <Text style={styles.dayOfWeek}>
+                    {daysLabel[new Date(day.dt * 1000).getDay()]}
+                  </Text>
+                  <Text style={styles.dateDetail}>
+                    {new Date(day.dt * 1000).getDate()}
+                  </Text>
+                  <Text>{monthsLabel[new Date(day.dt * 1000).getMonth()]}</Text>
                 </View>
                 <View style={styles.day} key={index}>
                   <View>
@@ -128,7 +158,6 @@ const styles = StyleSheet.create({
   date: {
     flex: 0.4,
     margin: 25,
-    borderBottomWidth: 1,
   },
   dayOfWeek: { fontSize: 28, fontWeight: "600" },
   dateDetail: { fontSize: 28, fontWeight: "200" },
