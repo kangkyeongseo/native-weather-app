@@ -1,5 +1,6 @@
 import * as Location from "expo-location";
 import { StatusBar } from "expo-status-bar";
+import { Fontisto } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import {
   View,
@@ -13,6 +14,16 @@ import {
 const { height, width: SCREEN_WIDTH } = Dimensions.get("window");
 
 const API_KEY = "8b46d1d2fb5be43ae110f89a6e57cab0";
+
+const icons = {
+  Clear: "day-sunny",
+  Clouds: "cloudy",
+  Atmosphere: "",
+  Snow: "snow",
+  Rain: "rains",
+  Drizzle: "rain",
+  Thunderstorm: "lightnimg",
+};
 
 export default function App() {
   const [city, setCity] = useState("Loading...");
@@ -40,7 +51,6 @@ export default function App() {
         )
       ).json();
       setDays(json.list);
-      console.log(json.list[0]);
     }
   };
   useEffect(() => {
@@ -51,10 +61,6 @@ export default function App() {
       <StatusBar style="light" />
       <View style={styles.city}>
         <Text style={styles.cityName}>{city}</Text>
-      </View>
-      <View style={styles.date}>
-        <Text style={styles.dayOfWeek}>Friday</Text>
-        <Text style={styles.dateDetail}>25 November</Text>
       </View>
       <ScrollView
         horizontal
@@ -70,13 +76,35 @@ export default function App() {
           days
             .filter((day, index) => index % 8 === 0)
             .map((day, index) => (
-              <View style={styles.day} key={index}>
-                <View>
-                  <Text style={styles.temp}>{Math.round(day.main.temp)}°</Text>
-                  <Text style={styles.description}>{day.weather[0].main}</Text>
-                  <Text style={styles.description}>
-                    {day.weather[0].description}
-                  </Text>
+              <View>
+                <View style={styles.date}>
+                  <Text style={styles.dayOfWeek}>Friday</Text>
+                  <Text style={styles.dateDetail}>25 November</Text>
+                </View>
+                <View style={styles.day} key={index}>
+                  <View>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text style={styles.temp}>
+                        {Math.round(day.main.temp)}°
+                      </Text>
+                      <Fontisto
+                        name={icons[day.weather[0].main]}
+                        size={68}
+                        color="black"
+                      />
+                    </View>
+                    <Text style={styles.description}>
+                      {day.weather[0].main}
+                    </Text>
+                    <Text style={styles.description}>
+                      {day.weather[0].description}
+                    </Text>
+                  </View>
                 </View>
               </View>
             ))
@@ -100,7 +128,7 @@ const styles = StyleSheet.create({
   date: {
     flex: 0.4,
     margin: 25,
-    borderBottomWidth: 2,
+    borderBottomWidth: 1,
   },
   dayOfWeek: { fontSize: 28, fontWeight: "600" },
   dateDetail: { fontSize: 28, fontWeight: "200" },
