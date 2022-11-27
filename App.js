@@ -41,13 +41,13 @@ const monthsLabel = {
 };
 
 const daysLabel = {
-  0: "Monday",
-  1: "Tuesday",
-  2: "Wednesday",
-  3: "Thursday",
-  4: "Friday",
-  5: "Saturday",
-  6: "Sunday",
+  1: "Monday",
+  2: "Tuesday",
+  3: "Wednesday",
+  4: "Thursday",
+  5: "Friday",
+  6: "Saturday",
+  0: "Sunday",
 };
 
 export default function App() {
@@ -103,35 +103,36 @@ export default function App() {
             .map((day, index) => (
               <View key={index}>
                 <View style={styles.date}>
-                  <Text style={styles.dayOfWeek}>
+                  <Text style={styles.getDay}>
                     {daysLabel[new Date(day.dt * 1000).getDay()]}
                   </Text>
-                  <Text style={styles.dateDetail}>
-                    {new Date(day.dt * 1000).getDate()}
-                  </Text>
-                  <Text>{monthsLabel[new Date(day.dt * 1000).getMonth()]}</Text>
+                  <View style={styles.dateDetail}>
+                    <Text style={styles.getDate}>
+                      {new Date(day.dt * 1000).getDate()}
+                    </Text>
+                    <Text style={styles.getMonth}>
+                      {monthsLabel[new Date(day.dt * 1000).getMonth()]}
+                    </Text>
+                  </View>
                 </View>
                 <View style={styles.day} key={index}>
                   <View>
+                    <Text style={styles.temp}>
+                      {Math.round(day.main.temp)}°
+                    </Text>
                     <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
+                      style={{ flexDirection: "row", alignItems: "center" }}
                     >
-                      <Text style={styles.temp}>
-                        {Math.round(day.main.temp)}°
+                      <Text style={styles.description}>
+                        {day.weather[0].main}
                       </Text>
                       <Fontisto
                         name={icons[day.weather[0].main]}
-                        size={68}
-                        color="black"
+                        size={24}
+                        color="white"
                       />
                     </View>
-                    <Text style={styles.description}>
-                      {day.weather[0].main}
-                    </Text>
-                    <Text style={styles.description}>
+                    <Text style={styles.descriptionDetail}>
                       {day.weather[0].description}
                     </Text>
                   </View>
@@ -152,26 +153,40 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   cityName: {
+    color: "white",
+    marginTop: 24,
     fontSize: 24,
     fontWeight: "600",
   },
+  weather: {},
   date: {
-    flex: 0.4,
     margin: 25,
+    marginBottom: 150,
   },
-  dayOfWeek: { fontSize: 28, fontWeight: "600" },
-  dateDetail: { fontSize: 28, fontWeight: "200" },
-  weather: {
-    marginTop: 50,
+  getDay: { fontSize: 28, fontWeight: "600", color: "white" },
+  dateDetail: { flexDirection: "row" },
+  getDate: {
+    fontSize: 28,
+    fontWeight: "200",
+    paddingRight: 10,
+    color: "white",
   },
+  getMonth: { fontSize: 28, fontWeight: "200", color: "white" },
   day: {
     width: SCREEN_WIDTH,
     alignItems: "center",
   },
   temp: {
-    fontSize: 178,
+    fontSize: 100,
+    color: "white",
   },
   description: {
-    fontSize: 30,
+    fontSize: 24,
+    color: "white",
+    paddingRight: 10,
+  },
+  descriptionDetail: {
+    fontSize: 16,
+    color: "white",
   },
 });
